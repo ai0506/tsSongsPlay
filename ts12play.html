@@ -140,7 +140,7 @@
         .progress {
             height: 100%;
             background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
-            width: 30%;
+            width: 0%;
             border-radius: 3px;
             transition: width 0.1s ease;
             position: relative;
@@ -219,6 +219,37 @@
             background: var(--accent-color);
             transform: translateY(-2px) scale(1.05);
             box-shadow: 0 8px 25px rgba(255, 140, 0, 0.5);
+        }
+        
+        .version-toggle {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .version-btn {
+            background: rgba(255, 255, 255, 0.8);
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        
+        .version-btn.active {
+            background: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 12px rgba(255, 140, 0, 0.3);
+        }
+        
+        .version-btn:hover:not(.active) {
+            background: rgba(255, 140, 0, 0.1);
+            color: var(--primary-color);
         }
         
         .volume-container {
@@ -399,7 +430,7 @@
             font-size: 0.9rem;
         }
         
-        .song-item, .control-btn, .progress-bar, .volume-slider, header, footer, .tab-btn {
+        .song-item, .control-btn, .progress-bar, .volume-slider, header, footer, .tab-btn, .version-btn {
             -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
@@ -477,6 +508,11 @@
                         <button class="control-btn repeat-btn" id="repeatBtn" title="循环播放">🔁</button>
                     </div>
                     
+                    <div class="version-toggle">
+                        <button class="version-btn active" id="originalBtn">原曲</button>
+                        <button class="version-btn" id="instrumentalBtn">伴奏</button>
+                    </div>
+                    
                     <div class="volume-container">
                         <span class="volume-icon">🔊</span>
                         <div class="volume-slider" id="volumeSlider">
@@ -514,20 +550,20 @@
     </div>
 
     <script>
-        // 歌曲数据 - 所有路径前加上 ts12files/
+        // 歌曲数据
         const songs = [
-            { id: 1, title: "The Fate of Ophelia", audio: "ts12files/ts12t1.m4a", lyrics: "ts12files/ts12t1.lrc" },
-            { id: 2, title: "Elizabeth Taylor", audio: "ts12files/ts12t2.m4a", lyrics: "ts12files/ts12t2.lrc" },
-            { id: 3, title: "Opalite", audio: "ts12files/ts12t3.m4a", lyrics: "ts12files/ts12t3.lrc" },
-            { id: 4, title: "Father Figure", audio: "ts12files/ts12t4.m4a", lyrics: "ts12files/ts12t4.lrc" },
-            { id: 5, title: "Eldest Daughter", audio: "ts12files/ts12t5.m4a", lyrics: "ts12files/ts12t5.lrc" },
-            { id: 6, title: "Ruin The Friendship", audio: "ts12files/ts12t6.m4a", lyrics: "ts12files/ts12t6.lrc" },
-            { id: 7, title: "Actually Romantic", audio: "ts12files/ts12t7.m4a", lyrics: "ts12files/ts12t7.lrc" },
-            { id: 8, title: "Wi$h Li$t", audio: "ts12files/ts12t8.m4a", lyrics: "ts12files/ts12t8.lrc" },
-            { id: 9, title: "Wood", audio: "ts12files/ts12t9.m4a", lyrics: "ts12files/ts12t9.lrc" },
-            { id: 10, title: "CANCELLED!", audio: "ts12files/ts12t10.m4a", lyrics: "ts12files/ts12t10.lrc" },
-            { id: 11, title: "Honey", audio: "ts12files/ts12t11.m4a", lyrics: "ts12files/ts12t11.lrc" },
-            { id: 12, title: "The Life of a Showgirl", audio: "ts12files/ts12t12.m4a", lyrics: "ts12files/ts12t12.lrc" }
+            { id: 1, title: "The Fate of Ophelia", audio: "ts12files/ts12t1.m4a", instrumental: "ts12files/ts12t1i.m4a", lyrics: "ts12files/ts12t1.lrc" },
+            { id: 2, title: "Elizabeth Taylor", audio: "ts12files/ts12t2.m4a", instrumental: "ts12files/ts12t2i.m4a", lyrics: "ts12files/ts12t2.lrc" },
+            { id: 3, title: "Opalite", audio: "ts12files/ts12t3.m4a", instrumental: "ts12files/ts12t3i.m4a", lyrics: "ts12files/ts12t3.lrc" },
+            { id: 4, title: "Father Figure", audio: "ts12files/ts12t4.m4a", instrumental: "ts12files/ts12t4i.m4a", lyrics: "ts12files/ts12t4.lrc" },
+            { id: 5, title: "Eldest Daughter", audio: "ts12files/ts12t5.m4a", instrumental: "ts12files/ts12t5i.m4a", lyrics: "ts12files/ts12t5.lrc" },
+            { id: 6, title: "Ruin The Friendship", audio: "ts12files/ts12t6.m4a", instrumental: "ts12files/ts12t6i.m4a", lyrics: "ts12files/ts12t6.lrc" },
+            { id: 7, title: "Actually Romantic", audio: "ts12files/ts12t7.m4a", instrumental: "ts12files/ts12t7i.m4a", lyrics: "ts12files/ts12t7.lrc" },
+            { id: 8, title: "Wi$h Li$t", audio: "ts12files/ts12t8.m4a", instrumental: "ts12files/ts12t8i.m4a", lyrics: "ts12files/ts12t8.lrc" },
+            { id: 9, title: "Wood", audio: "ts12files/ts12t9.m4a", instrumental: "ts12files/ts12t9i.m4a", lyrics: "ts12files/ts12t9.lrc" },
+            { id: 10, title: "CANCELLED!", audio: "ts12files/ts12t10.m4a", instrumental: "ts12files/ts12t10i.m4a", lyrics: "ts12files/ts12t10.lrc" },
+            { id: 11, title: "Honey", audio: "ts12files/ts12t11.m4a", instrumental: "ts12files/ts12t11i.m4a", lyrics: "ts12files/ts12t11.lrc" },
+            { id: 12, title: "The Life of a Showgirl", audio: "ts12files/ts12t12.m4a", instrumental: "ts12files/ts12t12i.m4a", lyrics: "ts12files/ts12t12.lrc" }
         ];
 
         // 获取DOM元素
@@ -542,6 +578,8 @@
         const nextBtn = document.getElementById('nextBtn');
         const shuffleBtn = document.getElementById('shuffleBtn');
         const repeatBtn = document.getElementById('repeatBtn');
+        const originalBtn = document.getElementById('originalBtn');
+        const instrumentalBtn = document.getElementById('instrumentalBtn');
         const volumeLevel = document.getElementById('volumeLevel');
         const progressBarContainer = document.getElementById('progressBar');
         const volumeSlider = document.getElementById('volumeSlider');
@@ -556,13 +594,16 @@
         let isPlaying = false;
         let isShuffled = false;
         let isRepeating = false;
+        let isInstrumental = false;
         let audio = new Audio();
         let updateInterval;
         let songDurations = Array(songs.length).fill(null);
+        let instrumentalDurations = Array(songs.length).fill(null);
         let songDurationElements = [];
         let isDragging = false;
         let currentLyrics = [];
         let lyricsInterval;
+        let lastActiveLyricIndex = -1;
 
         // 格式化时间
         function formatTime(seconds) {
@@ -647,7 +688,9 @@
                 lyricsContainer.appendChild(lyricElement);
             });
             
-            lyricsContainer.innerHTML += '<div style="height: 20px;"></div>'; // 底部留白
+            // 重置歌词滚动位置到顶部
+            lyricsContainer.scrollTop = 0;
+            lastActiveLyricIndex = -1;
         }
 
         // 更新歌词高亮
@@ -667,12 +710,32 @@
                 }
             }
             
+            // 如果高亮的歌词没有变化，直接返回
+            if (activeIndex === lastActiveLyricIndex) return;
+            
+            lastActiveLyricIndex = activeIndex;
+            
             // 更新高亮状态
             lyricLines.forEach((line, index) => {
                 if (index === activeIndex) {
                     line.classList.add('active');
-                    // 滚动到当前歌词
-                    line.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    
+                    // 智能滚动：只在需要时才滚动到当前歌词
+                    const container = lyricsContainer;
+                    const lineTop = line.offsetTop;
+                    const lineHeight = line.offsetHeight;
+                    const containerHeight = container.clientHeight;
+                    const scrollTop = container.scrollTop;
+                    
+                    // 如果当前歌词不在可视区域内，才进行滚动
+                    if (lineTop < scrollTop || lineTop + lineHeight > scrollTop + containerHeight) {
+                        // 计算滚动位置，让当前歌词在容器中间
+                        const targetScrollTop = lineTop - containerHeight / 2 + lineHeight / 2;
+                        container.scrollTo({
+                            top: targetScrollTop,
+                            behavior: 'smooth'
+                        });
+                    }
                 } else {
                     line.classList.remove('active');
                 }
@@ -705,9 +768,9 @@
 
         // 预加载歌曲时长
         function preloadSongDuration(index) {
+            // 预加载原曲时长
             const tempAudio = new Audio();
             tempAudio.src = songs[index].audio;
-            
             tempAudio.addEventListener('loadedmetadata', function() {
                 if (!isNaN(tempAudio.duration) && tempAudio.duration > 0) {
                     songDurations[index] = tempAudio.duration;
@@ -716,30 +779,66 @@
                     }
                 }
             });
+
+            // 预加载伴奏时长
+            const tempInstrumental = new Audio();
+            tempInstrumental.src = songs[index].instrumental;
+            tempInstrumental.addEventListener('loadedmetadata', function() {
+                if (!isNaN(tempInstrumental.duration) && tempInstrumental.duration > 0) {
+                    instrumentalDurations[index] = tempInstrumental.duration;
+                }
+            });
         }
 
         // 加载歌曲
         function loadSong(index) {
+            // 检查是否是切换歌曲（而不是切换版本）
+            const isSwitchingSong = index !== currentSongIndex;
+            
             currentSongIndex = index;
             const song = songs[index];
             
             currentSongTitle.textContent = song.title;
-            audio.src = song.audio;
+            
+            // 根据当前模式选择音频文件
+            const audioFile = isInstrumental ? song.instrumental : song.audio;
+
+            // 重置进度显示（只在切换歌曲时）
+            if (isSwitchingSong) {
+                progressBar.style.width = '0%';
+                currentTimeEl.textContent = '0:00';
+            }
+
+            // 只有在需要切换音频文件时才重新加载
+            if (audio.src !== audioFile || isSwitchingSong) {
+                const currentTime = isSwitchingSong ? 0 : audio.currentTime; // 切换歌曲时从0开始
+                const wasPlaying = !audio.paused && !isSwitchingSong; // 切换歌曲时不自动播放
+                
+                audio.src = audioFile;
+                
+                audio.addEventListener('canplay', function onCanPlay() {
+                    audio.currentTime = currentTime;
+                    audio.removeEventListener('canplay', onCanPlay);
+                    
+                    if (wasPlaying) {
+                        audio.play();
+                    }
+                }, { once: true });
+            }
             
             document.querySelectorAll('.song-item').forEach((item, i) => {
                 item.classList.toggle('active', i === index);
             });
             
-            progressBar.style.width = '0%';
-            currentTimeEl.textContent = '0:00';
-            
-            if (songDurations[index] !== null) {
-                totalTimeEl.textContent = formatTime(songDurations[index]);
+            // 根据当前模式显示正确的时长
+            const durationArray = isInstrumental ? instrumentalDurations : songDurations;
+            if (durationArray[index] !== null) {
+                totalTimeEl.textContent = formatTime(durationArray[index]);
             } else {
                 totalTimeEl.textContent = '0:00';
                 audio.addEventListener('loadedmetadata', function onLoad() {
                     if (!isNaN(audio.duration) && audio.duration > 0) {
-                        songDurations[index] = audio.duration;
+                        durationArray[index] = audio.duration;
                         totalTimeEl.textContent = formatTime(audio.duration);
                         audio.removeEventListener('loadedmetadata', onLoad);
                     }
@@ -748,21 +847,17 @@
             
             // 加载歌词
             loadLyrics(index);
-            
-            if (isPlaying) {
-                audio.play();
-            }
         }
 
         // 播放歌曲
         function playSong(index) {
             loadSong(index);
-            togglePlayPause();
+            togglePlayPause(true); // 强制播放
         }
 
         // 切换播放/暂停
-        function togglePlayPause() {
-            if (audio.paused) {
+        function togglePlayPause(forcePlay = false) {
+            if (audio.paused || forcePlay) {
                 audio.play();
                 isPlaying = true;
                 playBtn.innerHTML = '⏸';
@@ -776,6 +871,32 @@
                 clearInterval(updateInterval);
                 clearInterval(lyricsInterval);
             }
+        }
+
+        // 切换版本（原曲/伴奏）
+        function toggleVersion() {
+            // 保存当前播放进度
+            const currentTime = audio.currentTime;
+            const wasPlaying = !audio.paused;
+            
+            isInstrumental = !isInstrumental;
+            originalBtn.classList.toggle('active', !isInstrumental);
+            instrumentalBtn.classList.toggle('active', isInstrumental);
+            
+            // 重新加载当前歌曲
+            const song = songs[currentSongIndex];
+            const audioFile = isInstrumental ? song.instrumental : song.audio;
+            audio.src = audioFile;
+            
+            // 设置之前的时间位置
+            audio.addEventListener('canplay', function onCanPlay() {
+                audio.currentTime = currentTime;
+                audio.removeEventListener('canplay', onCanPlay);
+                
+                if (wasPlaying) {
+                    audio.play();
+                }
+            }, { once: true });
         }
 
         // 播放下一首
@@ -887,11 +1008,13 @@
         }
 
         // 事件监听
-        playBtn.addEventListener('click', togglePlayPause);
+        playBtn.addEventListener('click', () => togglePlayPause());
         nextBtn.addEventListener('click', playNext);
         prevBtn.addEventListener('click', playPrev);
         shuffleBtn.addEventListener('click', toggleShuffle);
         repeatBtn.addEventListener('click', toggleRepeat);
+        originalBtn.addEventListener('click', toggleVersion);
+        instrumentalBtn.addEventListener('click', toggleVersion);
 
         // 音量条点击事件
         volumeSlider.addEventListener('click', function(e) {
